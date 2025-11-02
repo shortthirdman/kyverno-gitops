@@ -1,0 +1,28 @@
+replicaCount: 3
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+serviceMonitor:
+  enabled: true
+  namespace: kyverno
+extraArgs:
+  - "--clientRateLimitQPS=25"
+  - "--clientRateLimitBurst=50"
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+metricsService:
+  create: true
+  type: ClusterIP
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/name: kyverno
